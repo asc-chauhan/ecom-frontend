@@ -36,7 +36,7 @@ const ProductCard = ({
                     specialPrice,
                 })
             }} 
-                className = "w-full overflow-hidden aspect[3/2]">
+                className = "w-full overflow-hidden aspect-3/2">
                 <img className="w-full h-full cursor-pointer transition-transform duration-300 hover:scale-105"
                 src={image}
                 alt={productName}></img>
@@ -86,7 +86,7 @@ const ProductCard = ({
                     disabled = {!isAvailable || btnLoader}
                     onClick={() => {}}
                     className={`bg-blue-500 ${isAvailable ? "opacity-100 hover:bg-blue-600" : "opacity-70"}
-                    text-white py-2 px-3 rounded-lg items-center transition-colors duration-300 w-36 flex justify-center`}>
+                    text-white py-2 px-3 rounded-lg items-center transition-colors duration-300 w-36 flex justify-center cursor-pointer`}>
                         <FaShoppingCart className="mr-2"/>
                         {isAvailable ? "Add to Cart" : "Stock Out"}
                     </button>
