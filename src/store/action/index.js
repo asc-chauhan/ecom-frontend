@@ -1,3 +1,4 @@
+import { set } from "react-hook-form";
 import api from "../../api/api";
 import { toast } from "react-hot-toast";
 
@@ -108,5 +109,40 @@ export const removeFromCart = (data, toast) => (dispatch, getState) => {
 
 export const authenticateSignInUser 
     = (sendData, toast, reset, navigate, setLoader) => async(dispatch) => {
-        
+        try {
+            setLoader(true);
+            const { data } = await api.post("/auth/signin", sendData);
+            dispatch({ type : "LOGIN_USER", payload : data });
+            localStorage.setItem("auth", JSON.stringify(data));
+            reset();
+            toast.success("Login Successful");
+            navigate("/");
+        } catch (error) {
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Login Failed");
+        }finally{
+            setLoader(false);
+        }
+};
+
+export const registerNewUser 
+    = (sendData, toast, reset, navigate, setLoader) => async(dispatch) => {
+        try {
+            setLoader(true);
+            const { data } = await api.post("/auth/signup", sendData);
+            reset();
+            toast.success(data?.message || "User Registered Successful");
+            navigate("/login");
+        } catch (error) {
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Internal server error");
+        }finally{
+            setLoader(false);
+        }
+};
+
+export const logoutUser = (navigate) => (dispatch) => {
+    dispatch({type : "LOG_OUT"});
+    localStorage.removeItem("auth");
+    navigate("/login");
 };
