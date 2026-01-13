@@ -101,14 +101,13 @@ const ProductCard = ({
                     <button  
                         disabled = {!isAvailable || btnLoader}
                         onClick={() => addToCartHandler({
-                            productId,
-                            productName,
                             image,
+                            productName,
                             description,
-                            quantity,
-                            price,
-                            discount,
                             specialPrice,
+                            price,
+                            productId,
+                            quantity,
                         })}
                         className={`bg-blue-500 ${isAvailable ? "opacity-100 hover:bg-blue-600" : "opacity-70"}
                         text-white py-2 px-3 rounded-lg items-center transition-colors duration-300 w-36 flex justify-center cursor-pointer`}>

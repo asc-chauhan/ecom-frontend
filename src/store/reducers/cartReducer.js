@@ -1,7 +1,7 @@
 const initialState = {
     cart : [],
     totalPrice : 0,
-    cartid : null,
+    cartId : null,
 }
 
 export const cartReducer = (state = initialState, action) => {
@@ -37,6 +37,13 @@ export const cartReducer = (state = initialState, action) => {
                 cart : state.cart.filter(
                     (item) => item.productId !== action.payload.productId
                 ),
+            }
+        case "GET_USER_CART_PRODUCTS":
+            return{
+                ...state,
+                cart: action.payload,
+                totalPrice: action.totalPrice,
+                cartId: action.cartId,
             }
         default:
             return state;

@@ -1,21 +1,44 @@
-import { Step, StepLabel, Stepper } from '@mui/material';
+import { Button, Step, StepLabel, Stepper } from '@mui/material';
 import React, { use, useEffect, useState } from 'react'
 import AddressInfo from './AddressInfo';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserAddresses } from '../../store/action';
+import toast from 'react-hot-toast';
+import Skeleton from '../shared/Skeleton';
+import ErrorPage from '../shared/ErrorPage';
+import PaymentMethod from './PaymentMethod';
 
 const Checkout = () => {
 
     const [activeStep, setActiveStep] = useState(0);
     const dispatch = useDispatch();
 
-    const { address } = useSelector((state) => state.auth);
+    const { address , selectedUserCheckoutAddress} = useSelector((state) => state.auth);
+    const { isLoading, errorMessage } = useSelector((state) => state.errors);
 
     const steps = ['Address', 'Payment Method', 'Order Summary', 'Payment'];
+
+    const paymentMethod = false;
 
     useEffect(() => {
         dispatch(getUserAddresses());
     }, [dispatch]);
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep-1);
+    };
+
+    const handleNext = () => {
+        if(activeStep === 0 && !selectedUserCheckoutAddress){
+            toast.error("Please select an address to proceed");
+            return;
+        }
+        if(activeStep === 1 && (!selectedUserCheckoutAddress || !paymentMethod)){
+            toast.error("Please select a payment method to proceed");
+            return;
+        }
+        setActiveStep((prevActiveStep) => prevActiveStep+1);
+    };
 
   return (
     <div className='py-14 min-h-[calc(100vh-100px)]'>
@@ -26,9 +49,51 @@ const Checkout = () => {
                 </Step>
             ))}
         </Stepper>
-        <div className='mt-5'>
-            {activeStep === 0 && <AddressInfo address = {address}/>}
+        
+        {isLoading? (
+            <div className='lg:w-[80%] mx-auto py-5'>
+                <Skeleton/>
+            </div>
+        ) : (
+            <div className='mt-5'>
+                {activeStep === 0 && <AddressInfo address = {address}/>}
+                {activeStep === 1 && <PaymentMethod />}
+            </div>
+        )}
+        
+         <div
+            className='flex justify-between items-center px-4 fixed z-50 h-24 bottom-0 bg-white left-0 w-full py-4 border-slate-200'
+            style={{ boxShadow: "0 -2px 4px rgba(100, 100, 100, 0.15)" }}>
+            <Button
+                variant='outlined'
+                disabled={activeStep === 0}
+                onClick={handleBack}>
+                    Back
+            </Button>
+            {activeStep !== steps.length - 1 && (
+                <button
+                    disabled={
+                        errorMessage || (
+                            (activeStep === 0 ? !selectedUserCheckoutAddress
+                                : activeStep === 1 ? !paymentMethod
+                                : false
+                            )
+                        )
+                    }
+                    className={`cursor-pointer bg-custom-blue font-semibold px-6 h-10 rounded-md text-white
+                       ${
+                        errorMessage ||
+                        (activeStep === 0 && !selectedUserCheckoutAddress) ||
+                        (activeStep === 1 && !paymentMethod)
+                        ? "opacity-60"
+                        : ""
+                       }`}
+                       onClick={handleNext}>
+                    Proceed
+                </button>
+            )} 
         </div>
+        {errorMessage && <ErrorPage message = {errorMessage} />}
     </div>
   )
 }

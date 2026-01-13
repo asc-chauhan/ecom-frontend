@@ -96,7 +96,6 @@ const AddressInfo = ({address}) => {
             title="Delete Address"
             onDeleteHandler={deleteAddressHandler}
         />
-
     </div>
   )
 }

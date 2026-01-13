@@ -51,7 +51,7 @@ export const fetchCategories = () => async (dispatch) => {
 export const addToCart = (data, qty = 1, toast) => 
     (dispatch, getState) => {
         // Find the product
-        const {products} = getState().products;
+        const { products } = getState().products;
         const getProduct = products.find(
             (item) => item.productId === data.productId
         );
@@ -68,44 +68,47 @@ export const addToCart = (data, qty = 1, toast) =>
         }
 };
 
-export const increaseCartQuantity = (data, toast, currentQuantity, setCurrentQuantity) =>
+export const increaseCartQuantity = 
+    (data, toast, currentQuantity, setCurrentQuantity) =>
     (dispatch, getState) => {
-        // Find the product in the product list
+        // Find the product
         const { products } = getState().products;
+        
         const getProduct = products.find(
             (item) => item.productId === data.productId
         );
+
         const isQuantityExist = getProduct.quantity >= currentQuantity + 1;
-        if(isQuantityExist){
+
+        if (isQuantityExist) {
             const newQuantity = currentQuantity + 1;
             setCurrentQuantity(newQuantity);
 
-            // Update cart in redux
             dispatch({
-                type : "ADD_CART",
-                payload : {...data, quantity : newQuantity + 1},
-            })
-
+                type: "ADD_TO_CART",
+                payload: {...data, quantity: newQuantity + 1 },
+            });
             localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart));
-        }else{
-            toast.error("Quantity reached to Limit!");
+        } else {
+            toast.error("Quantity Reached to Limit");
         }
     };
 
-export const decreaseCartQuantity = (data, newQuantity) =>
-    (dispatch, getState) => {   
+export const decreaseCartQuantity = 
+    (data, newQuantity) => (dispatch, getState) => {
         dispatch({
-            type : "ADD_CART",
-            payload : {...data, quantity : newQuantity},
+            type: "ADD_TO_CART",
+            payload: {...data, quantity: newQuantity},
         });
         localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart));
-    };
+    }
 
-export const removeFromCart = (data, toast) => (dispatch, getState) => {
+
+export const removeFromCart =  (data, toast) => (dispatch, getState) => {
     dispatch({type: "REMOVE_CART", payload: data });
     toast.success(`${data.productName} removed from cart`);
     localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart));
-};
+}
 
 export const authenticateSignInUser 
     = (sendData, toast, reset, navigate, setLoader) => async(dispatch) => {
@@ -224,4 +227,46 @@ export const clearCheckoutAddress = () => {
     return {
         type : "REMOVE_CHECKOUT_ADDRESS",
     };
+};
+
+export const addPaymentMethod = (method) => {
+    return {
+        type : "ADD_PAYMENT_METHOD",
+        payload : method,
+    };
+};
+
+export const createUserCart = (sendCartItems) => async (dispatch, getState) => {
+    try{
+        dispatch({ type : "IS_FETCHING" });
+        await api.post('/cart/create', sendCartItems);
+        await dispatch(getUserCart());
+    } catch (error){
+        console.log(error);
+        dispatch({
+            type : "IS_ERROR",
+            payload : error?.response?.data?.message || "Failed to create cart items.",
+        });
+    }
+};
+
+export const getUserCart = () => async (dispatch, getState) => {
+    try{
+        dispatch({type : "IS_FETCHING"});
+        const { data } = await api.get('/carts/users/cart');
+        dispatch({
+            type: "GET_USER_CART_PRODUCTS",
+            payload: data.products,
+            totalPrice: data.totalPrice,
+            cartId: data.cartId,
+        })
+        localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart));
+        dispatch({type: "IS_SUCCESS"});
+    } catch (error){
+        console.log(error);
+        dispatch({
+            type : "IS_ERROR",
+            payload : error?.response?.data?.message || "Failed to fetch cart items.",
+        });
+    }
 };
