@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BiUser } from 'react-icons/bi';
 import { IoExitOutline } from 'react-icons/io5';
 import { FaShoppingCart } from 'react-icons/fa';
+import { MdDashboard } from 'react-icons/md';
 import BackDrop from './BackDrop';
 import { logoutUser } from '../store/action';
 
@@ -65,6 +66,16 @@ const UserMenu = () => {
             </span>
           </MenuItem>
         </Link>
+        {user?.roles?.includes("ROLE_ADMIN") && (
+          <Link to="/admin">
+            <MenuItem className='flex gap-2' onClick={handleClose}>
+              <MdDashboard className='text-xl'/>
+              <span className='font-semibold'>
+                  Admin Panel
+              </span>
+            </MenuItem>
+          </Link>
+        )}
         <MenuItem className='flex gap-2' onClick={logOutHandler}>
             <div className='font-semibold w-full flex gap-2 items-center bg-button-gradient px-4 py-1 text-white rounded-xs'>
                 <IoExitOutline className= 'text-xl'/>

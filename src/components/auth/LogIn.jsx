@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { AiOutlineLogin } from "react-icons/ai";
-import InputField from "../shared/inputField";
+import { FaStore } from "react-icons/fa";
+import InputField from "../shared/InputField";
 import { useDispatch } from "react-redux";
 import { authenticateSignInUser } from "../../store/action";
 import toast from "react-hot-toast";
-import Loader from "../shared/Loader";
 import Spinners from "../shared/Spinners";
 
 const LogIn = () => {
@@ -18,45 +17,46 @@ const LogIn = () => {
         register,
         handleSubmit,
         reset,
-        formState: {errors},
+        formState: { errors },
     } = useForm({
         mode: "onTouched",
     });
 
-    const loginHandler = async(data) => {
-        console.log("Login click");
-        dispatch(authenticateSignInUser(
-            data,
-            toast,
-            reset,
-            navigate,
-            setLoader
-        ));
+    const loginHandler = async (data) => {
+        dispatch(authenticateSignInUser(data, toast, reset, navigate, setLoader));
     };
 
     return (
-        <div className="min-h-[calc(100vh-64px)] flex justify-center items-center">
-            <form 
-                onSubmit={handleSubmit(loginHandler)}
-                className="sm:w-[450px] w-[360px] shadow-custom py-8 sm:px-8 px-4 rounded-md">
-                    <div className="flex flex-col items-center justify-center space-y-4">
-                        <AiOutlineLogin className="text-slate-800 text-5xl"/>
-                        <h1 className="text-slate-800 text-center font-montserrat lg:text-3xl text-2xl font-bold">
-                            Login Here
-                        </h1>
+        <div className="min-h-[calc(100vh-70px)] flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+            <div className="w-full max-w-[420px]">
+                {/* Logo */}
+                <div className="flex justify-center mb-8">
+                    <Link to="/" className="flex items-center gap-2">
+                        <div className="p-2.5 bg-indigo-600 rounded-xl">
+                            <FaStore className="text-white text-lg" />
+                        </div>
+                        <span className="text-2xl font-bold text-slate-800 dark:text-white">E-Shop</span>
+                    </Link>
+                </div>
+
+                {/* Card */}
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
+                    <div className="text-center mb-6">
+                        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Welcome back</h1>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Sign in to your account</p>
                     </div>
-                    <hr className="mt-2 mb-5 text-black" />
-                    <div className="flex flex-col gap-3">
+
+                    <form onSubmit={handleSubmit(loginHandler)} className="space-y-4">
                         <InputField
-                            label="UserName"
+                            label="Username"
                             required
                             id="username"
                             type="text"
-                            message="*UserName is required"
+                            message="*Username is required"
                             placeholder="Enter your username"
                             register={register}
                             errors={errors}
-                            />
+                        />
 
                         <InputField
                             label="Password"
@@ -67,28 +67,34 @@ const LogIn = () => {
                             placeholder="Enter your password"
                             register={register}
                             errors={errors}
-                            />
-                    </div>
-                    <button
-                        disabled={loader}
-                        className="bg-button-gradient flex gap-2 items-center justify-center font-semibold text-white w-full py-2 hover:text-slate-400 transition-colors duration-100 rounded-xs my-3"
-                        type="submit">
-                        {loader ? (
-                            <>
-                            <Spinners /> Loading...
-                            </>
-                        ) : (
-                            <>Login</>
-                        )}
-                    </button>
-                    <p className="text-center text-sm text-slate-700 mt-6">
-                        Don't have an account?
+                        />
+
+                        <button
+                            disabled={loader}
+                            className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors duration-200 flex items-center justify-center gap-2 mt-2"
+                            type="submit"
+                        >
+                            {loader ? (
+                                <>
+                                    <Spinners /> Signing in...
+                                </>
+                            ) : (
+                                "Sign In"
+                            )}
+                        </button>
+                    </form>
+
+                    <p className="text-center text-sm text-slate-500 mt-6">
+                        Don't have an account?{" "}
                         <Link
-                            className="font-semibold underline hover:text-black"
-                            to="/register">
-                        <span> SignUp</span></Link>  
+                            className="font-semibold text-indigo-600 hover:text-indigo-700"
+                            to="/register"
+                        >
+                            Create one
+                        </Link>
                     </p>
-            </form>
+                </div>
+            </div>
         </div>
     );
 };

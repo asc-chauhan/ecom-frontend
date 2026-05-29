@@ -2,20 +2,15 @@ import { FaExclamationTriangle } from "react-icons/fa";
 import ProductCard from "../shared/ProductCard";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { fetchCategories} from "../../store/action";
+import { fetchCategories } from "../../store/action";
 import Filter from "./Filter";
 import useProductFilter from "../../hooks/useProductFilter";
 import Loader from "../shared/Loader";
-import Paginations from "../shared/Paginations"
+import Paginations from "../shared/Paginations";
 
-const Products =  () => {
-    const { isLoading, errorMessage} = useSelector(
-        (state) => state.errors
-    );
-    
-    const {products, categories, pagination} = useSelector(
-        (state) => state.products
-    );
+const Products = () => {
+    const { isLoading, errorMessage } = useSelector((state) => state.errors);
+    const { products, categories, pagination } = useSelector((state) => state.products);
 
     const dispatch = useDispatch();
     useProductFilter();
@@ -24,55 +19,53 @@ const Products =  () => {
         dispatch(fetchCategories());
     }, [dispatch]);
 
-    // const products = [
-    //     {
-    //         productId: 652,
-    //         productName: "Iphone Xs Max",
-    //         image: "https://placehold.co/600x400",
-    //         description: "Experience the latest in mobile technology with advanced cameras, powerful processing, and an all-day battery.",
-    //         quantity: 10,
-    //         price: 1450.0,
-    //         discount: 10.0,
-    //         specialPrice: 1305.0,
-    //     },
-    //     {
-    //         productId: 654,
-    //         productName: "MacBook Air M2",
-    //         image: "https://placehold.co/600x400",
-    //         description: "Ultra-thin laptop with Apple's M2 chip, providing fast performance in a lightweight, portable design.",
-    //         quantity: 0,
-    //         price: 2550.0,
-    //         discount: 20.0,
-    //         specialPrice: 2040.0,
-    //     }
-    // ];
-    return(
-        <div className="lg:px-14 sm:px-8 px-4 py-14 2xl:w-[90%] 2xl:mx-auto">
-            <Filter categories = {categories ? categories : []}/>
-            {false ? (
-                    <Loader/>
-                ) : errorMessage ? (
-                    <div className="flex justify-center items-center h-[200px]">
-                        <FaExclamationTriangle className="text-slate-800 text-3xl mr-2"/>
-                        <span className="text-slate-800 text-lg font-medium">
-                            {errorMessage}
-                        </span>
+    return (
+        <div className="lg:px-14 sm:px-8 px-4 py-10 2xl:w-[90%] 2xl:mx-auto">
+            {/* Page Header */}
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-slate-800 dark:text-white">All Products</h1>
+                <p className="text-slate-500 dark:text-slate-400 mt-1">
+                    {pagination?.totalElements
+                        ? `${pagination.totalElements} products available`
+                        : "Browse our collection"}
+                </p>
+            </div>
+
+            {/* Filter Bar */}
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-8">
+                <Filter categories={categories ? categories : []} />
+            </div>
+
+            {/* Products Grid */}
+            {isLoading ? (
+                <Loader />
+            ) : errorMessage ? (
+                <div className="flex justify-center items-center h-[200px]">
+                    <FaExclamationTriangle className="text-slate-800 text-3xl mr-2" />
+                    <span className="text-slate-800 text-lg font-medium">
+                        {errorMessage}
+                    </span>
+                </div>
+            ) : (
+                <div className="min-h-[700px]">
+                    <div className="grid 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-6">
+                        {products &&
+                            products.map((item, i) => (
+                                <ProductCard key={i} {...item} />
+                            ))}
                     </div>
-                ) : (
-                    <div className="min-h-[700px]">
-                        <div className="pb-6 pt-14 grid 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-y-6 gap-x-6">
-                            {products && products.map((item, i) => <ProductCard key={i} {...item} />)}
+                    {pagination?.totalPages > 1 && (
+                        <div className="flex justify-center pt-12">
+                            <Paginations
+                                numberOfPages={pagination?.totalPages}
+                                totalProducts={pagination?.totalElements}
+                            />
                         </div>
-                        <div className = "flex justify-center pt-10">
-                            <Paginations 
-                            numberOfPages = {pagination?.totalPages}
-                            totalProducts = {pagination?.totalElements}/>
-                        </div>
-                    </div>
-                )
-            }
+                    )}
+                </div>
+            )}
         </div>
     );
-}
+};
 
 export default Products;
