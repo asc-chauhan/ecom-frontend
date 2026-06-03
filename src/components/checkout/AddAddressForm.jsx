@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import InputField from '../shared/inputField'
+import InputField from '../shared/InputField'
 import { useForm } from 'react-hook-form';
 import { FaAddressCard } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
