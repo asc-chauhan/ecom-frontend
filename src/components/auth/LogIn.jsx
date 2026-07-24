@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { FaStore } from "react-icons/fa";
 import InputField from "../shared/InputField";
 import { useDispatch } from "react-redux";
@@ -12,6 +12,13 @@ const LogIn = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [loader, setLoader] = useState(false);
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => {
+        if (searchParams.get("expired") === "true") {
+            toast.error("Session expired. Please sign in again.");
+        }
+    }, [searchParams]);
 
     const {
         register,

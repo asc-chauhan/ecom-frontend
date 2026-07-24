@@ -25,12 +25,12 @@ const Category = () => {
     setSubmitting(true);
     try {
       if (editingCategory) {
-        await api.put(`/public/categories/${editingCategory.categoryId}`, {
+        await api.put(`/admin/categories/${editingCategory.categoryId}`, {
           categoryName: categoryName,
         });
         toast.success('Category updated');
       } else {
-        await api.post('/public/categories', { categoryName: categoryName });
+        await api.post('/admin/categories', { categoryName: categoryName });
         toast.success('Category created');
       }
       dispatch(fetchCategories());

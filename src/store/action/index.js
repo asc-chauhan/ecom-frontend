@@ -37,7 +37,7 @@ export const fetchCategories = () => async (dispatch) => {
             totalPages : data.totalPages,
             lastPage : data.lastPage,
         });
-        dispatch({type : "IS_ERROR"});
+        dispatch({type : "IS_SUCCESS"});
     } catch (error){
         console.log(error);
         dispatch({
@@ -85,7 +85,7 @@ export const increaseCartQuantity =
 
             dispatch({
                 type: "ADD_TO_CART",
-                payload: {...data, quantity: newQuantity + 1 },
+                payload: {...data, quantity: newQuantity },
             });
             localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart));
         } else {
@@ -114,8 +114,15 @@ export const authenticateSignInUser
         try {
             setLoader(true);
             const { data } = await api.post("/auth/signin", sendData);
-            dispatch({ type : "LOGIN_USER", payload : data });
-            localStorage.setItem("auth", JSON.stringify(data));
+            // Store user info only (token is in httpOnly cookie, not accessible via JS)
+            const userInfo = {
+                id: data.id,
+                username: data.username,
+                email: data.email,
+                roles: data.roles,
+            };
+            dispatch({ type : "LOGIN_USER", payload : userInfo });
+            localStorage.setItem("auth", JSON.stringify(userInfo));
             reset();
             toast.success("Login Successful");
             navigate("/");
